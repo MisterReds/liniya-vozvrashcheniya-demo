@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101619">
+  <meta name="description" content="Восстанови станцию у Чернобыльской зоны: собери припасы, запусти генератор и переживи первую ночь.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23101619'/%3E%3Cpath d='M11 30V10h18v4H16v4h10v4H16v8z' fill='%23d3a866'/%3E%3C/svg%3E">
+  <title>Линия возвращения — демо</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">Л</span><div><strong>ЛИНИЯ ВОЗВРАЩЕНИЯ</strong><small>вертикальный срез · 0.1</small></div></div>
+      <div class="phase"><span class="phase-dot"></span><span id="phase-label">РАЗВЕДКА</span><span class="phase-divider">/</span><span id="clock-label">ДЕНЬ 1</span></div>
+      <button class="icon-button" id="help-button" aria-label="Управление">?</button>
+    </header>
+
+    <section class="game-frame">
+      <canvas id="game" width="1100" height="600" aria-label="Игровая сцена: заброшенная станция у Чернобыльской зоны"></canvas>
+      <div class="canvas-vignette"></div>
+      <div class="objective-card" id="objective-card">
+        <span class="eyebrow">ЗАДАЧА</span>
+        <strong id="objective-text">Найди лом и топливо для генератора</strong>
+        <div class="objective-progress"><i id="objective-progress"></i></div>
+      </div>
+      <div class="toast" id="toast" aria-live="polite"></div>
+      <div class="interaction-hint" id="interaction-hint"></div>
+      <div class="overlay" id="start-overlay">
+        <div class="overlay-panel intro-panel">
+          <div class="eyebrow">ЧЕРНОБЫЛЬСКИЙ УЗЕЛ · ДЕНЬ 1</div>
+          <h1>Свет нужно<br><em>заслужить.</em></h1>
+          <p>Собери припасы, запусти генератор и удержи станцию до рассвета. Это первый узел длинного пути на восток.</p>
+          <button class="primary-button" id="start-button">НАЧАТЬ РАЗВЕДКУ <span>→</span></button>
+          <div class="keyline"><kbd>A</kbd><kbd>D</kbd> движение <i></i><kbd>E</kbd> действие <i></i><kbd>ПРОБЕЛ</kbd> удар</div>
+        </div>
+      </div>
+      <div class="overlay hidden" id="end-overlay">
+        <div class="overlay-panel end-panel">
+          <div class="eyebrow" id="end-eyebrow">ПЕРВЫЙ УЗЕЛ ВОССТАНОВЛЕН</div>
+          <h2 id="end-title">Станция снова дышит.</h2>
+          <p id="end-copy"></p>
+          <button class="primary-button" id="restart-button">СЫГРАТЬ ЕЩЁ РАЗ <span>↻</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="lower-grid">
+      <div class="panel status-panel">
+        <div class="panel-heading"><span class="eyebrow">СОСТОЯНИЕ УЗЛА</span><span class="status-live"><i></i> НА СВЯЗИ</span></div>
+        <div class="resource-row">
+          <div class="resource"><span class="resource-icon scrap-icon">▧</span><div><small>ЛОМ</small><strong id="scrap-count">0</strong></div></div>
+          <div class="resource"><span class="resource-icon fuel-icon">◈</span><div><small>ТОПЛИВО</small><strong id="fuel-count">0</strong></div></div>
+          <div class="resource"><span class="resource-icon med-icon">✚</span><div><small>МЕДИЦИНА</small><strong id="med-count">1</strong></div></div>
+        </div>
+        <div class="gate-row"><span>ОГРАЖДЕНИЕ</span><div class="meter"><i id="gate-meter"></i></div><b id="gate-value">100%</b></div>
+      </div>
+
+      <div class="panel people-panel">
+        <div class="panel-heading"><span class="eyebrow">ЛЮДИ · <b id="people-count">4</b></span><span class="muted">назначь работу</span></div>
+        <div class="people-list">
+          <button class="person-card selected" data-role="scavenger"><span class="person-avatar avatar-one">М</span><span class="person-info"><strong>Марта</strong><small>СБОРЩИК</small></span><span class="person-check">✓</span></button>
+          <button class="person-card" data-role="guard"><span class="person-avatar avatar-two">И</span><span class="person-info"><strong>Илья</strong><small>БЕЗ НАЗНАЧЕНИЯ</small></span><span class="person-check">✓</span></button>
+          <button class="person-card" data-role="engineer"><span class="person-avatar avatar-three">С</span><span class="person-info"><strong>Сева</strong><small>ИНЖЕНЕР</small></span><span class="person-check">✓</span></button>
+        </div>
+        <div class="people-note" id="people-note">Марта будет понемногу находить лом, пока работает станция.</div>
+      </div>
+
+      <div class="panel radio-panel">
+        <div class="panel-heading"><span class="eyebrow">РАДИОЖУРНАЛ</span><span class="signal">◉</span></div>
+        <div class="log-entry"><span class="log-time">06:14</span><p>Экспедиция закрепилась у старой станции. Генератор молчит.</p></div>
+        <div class="log-entry log-latest" id="latest-log"><span class="log-time">--:--</span><p>В эфире только помехи.</p></div>
+      </div>
+    </section>
+
+    <footer><span>ОДИН УЗЕЛ · ОДНА НОЧЬ · ОДИН ШАНС ЗАЖЕЧЬ СВЕТ</span><span>ПРОТОТИП ИГРОВОГО ЦИКЛА</span></footer>
+  </main>
+  <div class="modal hidden" id="help-modal">
+    <div class="modal-card"><button class="modal-close" id="close-help" aria-label="Закрыть">×</button><div class="eyebrow">КАК ИГРАТЬ</div><h2>Сначала станция.<br>Потом — путь.</h2><p><kbd>A</kbd> <kbd>D</kbd> — идти по локации. <kbd>E</kbd> — подобрать припасы, починить генератор или построить укрепление рядом с объектом. <kbd>Пробел</kbd> — ударить врага, когда он рядом.</p><p>Нажми на карточку жителя, чтобы сменить его работу. Сборщик приносит лом со временем, охранник помогает отражать атаку. После запуска генератора нажми кнопку «Начать ночь».</p><button class="primary-button" id="help-ok">ПОНЯТНО</button></div>
+  </div>
+  <style>.night-button{position:absolute;right:22px;top:20px;z-index:2;background:#d3a866;border:0;padding:12px 15px;color:#1b1b17;font:700 9px 'DM Mono',monospace;letter-spacing:.08em;cursor:pointer;box-shadow:0 4px 18px #0007}.night-button:hover{background:#e4bd7e}</style>
+  <script src="game.js"></script>
+</body>
+</html>
