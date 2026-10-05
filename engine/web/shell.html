@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#101719">
+  <link rel="icon" href="data:,">
+  <title>Линия возвращения — тест собственного движка</title>
+  <style>
+    :root{color-scheme:dark;font-family:system-ui,Arial,sans-serif;background:#0d1416;color:#e7e8dd}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;padding:22px;display:grid;place-items:center}
+    main{width:min(100%,1080px);margin:auto}
+    header{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:12px}
+    h1{font-size:14px;letter-spacing:.16em;margin:0;color:#d7b477}
+    header span,.help{color:#9da9a2;font-size:12px}
+    .screen{border:1px solid #46524c;background:#172124;box-shadow:0 16px 50px #0008;overflow:hidden}
+    canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;image-rendering:pixelated;outline:0;touch-action:none}
+    .help{display:flex;justify-content:space-between;gap:12px;padding:10px 2px;font-size:11px}
+    .status{height:18px;color:#a6b78f;font:11px monospace}
+    .touch{display:none;justify-content:space-between;gap:12px;padding:10px 0;touch-action:none;user-select:none;-webkit-user-select:none}
+    .touch-group{display:flex;gap:8px}
+    .touch button{min-width:58px;height:54px;border:1px solid #65756b;border-radius:4px;background:#202d2f;color:#eee5d0;font-size:17px;font-weight:700;touch-action:none}
+    .touch button.action{min-width:86px;font-size:11px;background:#63543b}
+    .touch button.attack{background:#633e35}
+    .touch button:active{transform:translateY(2px);filter:brightness(1.3)}
+    @media(max-width:760px){body{display:block;padding:12px}.touch{display:flex}.help{font-size:10px}header span{font-size:10px}}
+  </style>
+</head>
+<body>
+<main>
+  <header><h1>ЛИНИЯ ВОЗВРАЩЕНИЯ</h1><span>СОБСТВЕННЫЙ C++ / SDL3 ENGINE · WEB BUILD</span></header>
+  <div class="screen"><canvas id="canvas" tabindex="0" oncontextmenu="event.preventDefault()"></canvas></div>
+  <nav class="touch" aria-label="Игровое управление">
+    <div class="touch-group"><button class="action" data-code="Enter">СТАРТ</button><button data-code="ArrowLeft" aria-label="Влево">◀</button><button data-code="ArrowRight" aria-label="Вправо">▶</button></div>
+    <div class="touch-group"><button class="action" data-code="KeyE">ДЕЙСТВИЕ</button><button class="action" data-code="KeyN">НОЧЬ</button><button class="attack" data-code="Space">УДАР</button></div>
+  </nav>
+  <div class="help"><span>WASD / СТРЕЛКИ — ДВИЖЕНИЕ · E — ДЕЙСТВИЕ · N — НАЧАТЬ НОЧЬ · ПРОБЕЛ — УДАР · Q — БАРРИКАДА</span><span>ENTER — НАЧАТЬ · ESC — ВЫХОД</span></div>
+  <div id="status" class="status">Загрузка игровой сборки…</div>
+</main>
+<script>
+  const canvas = document.getElementById('canvas');
+  const statusElement = document.getElementById('status');
+  var Module = {
+    canvas,
+    print: text => console.log(text),
+    printErr: text => console.error(text),
+    setStatus: text => { statusElement.textContent = text || 'Игра загружена. Нажми Enter.'; },
+    monitorRunDependencies: left => { if (left) statusElement.textContent = 'Загрузка…'; }
+  };
+  canvas.addEventListener('keydown', event => {
+    if (event.code === 'Enter') statusElement.textContent = 'День: собери лом и топливо, затем удержи ворота ночью.';
+  });
+  document.querySelectorAll('.touch button').forEach(button => {
+    const key = button.dataset.code;
+    const send = (type, event) => {
+      event.preventDefault(); canvas.focus();
+      const map = {Enter:['Enter','Enter'],ArrowLeft:['ArrowLeft','ArrowLeft'],ArrowRight:['ArrowRight','ArrowRight'],KeyE:['e','KeyE'],KeyN:['n','KeyN'],Space:[' ','Space']};
+      const [value, code] = map[key];
+      canvas.dispatchEvent(new KeyboardEvent(type,{key:value,code,bubbles:true,cancelable:true}));
+    };
+    button.addEventListener('pointerdown', e => { button.setPointerCapture(e.pointerId); send('keydown',e); });
+    button.addEventListener('pointerup', e => send('keyup',e));
+    button.addEventListener('pointercancel', e => send('keyup',e));
+    button.addEventListener('lostpointercapture', e => send('keyup',e));
+  });
+</script>
+{{{ SCRIPT }}}
+</body>
+</html>
