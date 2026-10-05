@@ -33,7 +33,7 @@
           <h1>Свет нужно<br><em>заслужить.</em></h1>
           <p>Собери припасы, запусти генератор и удержи станцию до рассвета. Это первый узел длинного пути на восток.</p>
           <button class="primary-button" id="start-button">НАЧАТЬ РАЗВЕДКУ <span>→</span></button>
-          <div class="keyline"><kbd>A</kbd><kbd>D</kbd> движение <i></i><kbd>E</kbd> действие <i></i><kbd>ПРОБЕЛ</kbd> удар</div>
+          <div class="keyline"><kbd>A</kbd><kbd>D</kbd> движение <i></i><kbd>E</kbd> действие <i></i><kbd>ПРОБЕЛ</kbd> удар<br><span>На телефоне — кнопки под сценой.</span></div>
         </div>
       </div>
       <div class="overlay hidden" id="end-overlay">
@@ -45,6 +45,17 @@
         </div>
       </div>
     </section>
+
+    <nav class="touch-controls" aria-label="Игровое управление">
+      <div class="move-pad">
+        <button class="touch-button move-button" data-hold="a" aria-label="Идти влево">◀</button>
+        <button class="touch-button move-button" data-hold="d" aria-label="Идти вправо">▶</button>
+      </div>
+      <div class="action-pad">
+        <button class="touch-button action-button" data-tap="interact">ДЕЙСТВИЕ</button>
+        <button class="touch-button attack-button" data-tap="attack">УДАР</button>
+      </div>
+    </nav>
 
     <section class="lower-grid">
       <div class="panel status-panel">
@@ -64,7 +75,7 @@
           <button class="person-card" data-role="guard"><span class="person-avatar avatar-two">И</span><span class="person-info"><strong>Илья</strong><small>БЕЗ НАЗНАЧЕНИЯ</small></span><span class="person-check">✓</span></button>
           <button class="person-card" data-role="engineer"><span class="person-avatar avatar-three">С</span><span class="person-info"><strong>Сева</strong><small>ИНЖЕНЕР</small></span><span class="person-check">✓</span></button>
         </div>
-        <div class="people-note" id="people-note">Марта будет понемногу находить лом, пока работает станция.</div>
+        <div class="people-note" id="people-note">Марта идёт к куче лома. Дай ей время поработать — это видно на сцене.</div>
       </div>
 
       <div class="panel radio-panel">
@@ -77,7 +88,7 @@
     <footer><span>ОДИН УЗЕЛ · ОДНА НОЧЬ · ОДИН ШАНС ЗАЖЕЧЬ СВЕТ</span><span>ПРОТОТИП ИГРОВОГО ЦИКЛА</span></footer>
   </main>
   <div class="modal hidden" id="help-modal">
-    <div class="modal-card"><button class="modal-close" id="close-help" aria-label="Закрыть">×</button><div class="eyebrow">КАК ИГРАТЬ</div><h2>Сначала станция.<br>Потом — путь.</h2><p><kbd>A</kbd> <kbd>D</kbd> — идти по локации. <kbd>E</kbd> — подобрать припасы, починить генератор или построить укрепление рядом с объектом. <kbd>Пробел</kbd> — ударить врага, когда он рядом.</p><p>Нажми на карточку жителя, чтобы сменить его работу. Сборщик приносит лом со временем, охранник помогает отражать атаку. После запуска генератора нажми кнопку «Начать ночь».</p><button class="primary-button" id="help-ok">ПОНЯТНО</button></div>
+    <div class="modal-card"><button class="modal-close" id="close-help" aria-label="Закрыть">×</button><div class="eyebrow">КАК ИГРАТЬ</div><h2>Сначала станция.<br>Потом — путь.</h2><p><kbd>A</kbd> <kbd>D</kbd> — идти по локации. <kbd>E</kbd> — подобрать припасы, починить генератор или построить укрепление рядом с объектом. <kbd>Пробел</kbd> — ударить врага, когда он рядом. На телефоне удерживай стрелки, чтобы идти; «Действие» и «Удар» нажимай один раз.</p><p>Нажми на карточку жителя, чтобы сменить работу. Марта сначала должна дойти до груды лома, затем будет подбирать его по одной детали. Охранник помогает отражать атаку. После запуска генератора нажми «Начать ночь».</p><button class="primary-button" id="help-ok">ПОНЯТНО</button></div>
   </div>
   <style>.night-button{position:absolute;right:22px;top:20px;z-index:2;background:#d3a866;border:0;padding:12px 15px;color:#1b1b17;font:700 9px 'DM Mono',monospace;letter-spacing:.08em;cursor:pointer;box-shadow:0 4px 18px #0007}.night-button:hover{background:#e4bd7e}</style>
   <script src="game.js"></script>
