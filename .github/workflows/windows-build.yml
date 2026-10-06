@@ -19,6 +19,8 @@ jobs:
           cmake -S engine -B build
           -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
           -DVCPKG_TARGET_TRIPLET=x64-windows
+          -DVCPKG_MANIFEST_MODE=ON
+          -DVCPKG_MANIFEST_DIR="$env:GITHUB_WORKSPACE/engine"
           -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --config Release --parallel
