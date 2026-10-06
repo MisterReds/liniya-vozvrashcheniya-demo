@@ -1,36 +1,46 @@
-# Return Line Engine Spike
+# Линия возвращения — движок и playable slice
 
-Minimal native runtime spike for the PC version. This is our own software pixel renderer and fixed-step game loop; SDL3 provides the window, input events, controller detection and final texture presentation.
+Игровой цикл написан на C++20. SDL3 здесь отвечает за окно, клавиатуру, геймпады и показ кадра. Внутренний буфер 640×360, камера, пиксельный вывод, сущности и правила игры остаются в нашем коде. В браузере тот же C++ код собирается в WebAssembly.
 
-## Build
+## Собрать для ПК
 
-Requirements: C++20 compiler, CMake 3.24+, and the SDL3 development package with its CMake config files.
+Нужны C++20, CMake 3.24+ и SDL3 с CMake package config:
 
 ```sh
 cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/SDL3
 cmake --build build --config Release
 ```
 
-On Windows, pass the folder that contains SDL3's `lib/cmake/SDL3` directory as `CMAKE_PREFIX_PATH`. A Windows build has not yet been run from this workspace.
-
-Run the game window:
+Запуск:
 
 ```sh
 ./build/return_line_engine
 ```
 
-Press **Enter** to start. Use **A/D** or **Left/Right** to move; **E** collects supplies or repairs the generator; reach the gate and press **N** to begin the night; **Space** attacks, and **Q** builds a barricade at the gate. A connected gamepad's left stick moves the character. Press **Escape** to quit and **R** to restart after the result.
+На Windows запускайте `build/Release/return_line_engine.exe` и положите рядом `SDL3.dll` из SDL3 runtime. CI workflow проекта собирает Windows x64 архив при изменении движка.
 
-The short playable loop is: collect two scrap caches and fuel, let Marta finish one visible salvage job, repair the generator, build a barricade, then defend the gate until dawn. This is deliberately one small vertical slice; the tilemap loader and final editor-authored art are still future work.
+## Управление
 
-The headless startup/render check used in CI is:
+- Enter — начать; R — начать заново; Esc — выйти.
+- A/D или стрелки — движение; E — подобрать ресурс, осмотреть след, включить генератор или починить путь.
+- 1 — сбор ресурсов; 2 — ремонт; 3 — охрана.
+- Q — укрепить ворота; Space — удар; H — аптечка.
+- Геймпад: левый стик для движения.
+
+Игрок прибывает к станции у Чернобыльской зоны, собирает лом и топливо, выбирает работу людей, решает, тратить ли лом на оборону или восстановление пути, переживает ночь и получает короткий сигнал с востока. Найденный след меняет последнюю реплику. В мобильной веб-версии экранные кнопки повторяют основные действия.
+
+## Веб-сборка
+
+GitHub Pages публикует ту же C++ игру: [открыть демо](https://misterreds.github.io/liniya-vozvrashcheniya-demo/). Управление не требует загрузки или установки. Игра запускается в браузере на ПК и телефоне.
+
+## Границы этой версии
+
+Это проверочный вертикальный срез одного игрового узла, не готовая кампания. Спрайты персонажей, существ, ресурсов и повторяемые тайлы сделаны отдельными вручную заданными пиксельными рисунками в `src/PixelArt.hpp`; шрифт — отдельная пиксельная таблица в `src/PixelFont.hpp`. Звуковой слой, редактор тайловых карт, сохранения, настройки, полноценный игровой пакет и внешнее тестирование на Windows ещё не сделаны. Игра без звука, а продолжительность этой короткой сборки пока меньше целевых 15–25 минут из концепт-документа.
+
+## Воспроизводимая проверка кадра
 
 ```sh
 SDL_VIDEODRIVER=dummy SDL_RENDER_DRIVER=software ./build/return_line_engine --smoke-frame
 ```
 
-This opens the SDL dummy display, creates the runtime, draws one frame into the custom 640×360 pixel buffer, presents it through SDL and exits. The native Windows build is not yet tested in this workspace.
-
-## Web playtest
-
-The same C++ source can be compiled to WebAssembly with Emscripten and SDL3. GitHub Pages serves that build for link-based playtests; the browser shell supplies touch buttons, while the simulation and renderer remain in C++.
+Проверка создаёт runtime, рисует кадр в software pixel buffer, показывает его через SDL dummy backend и завершает процесс.
