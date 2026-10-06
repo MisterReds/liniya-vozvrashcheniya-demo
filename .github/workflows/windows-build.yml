@@ -24,6 +24,14 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --config Release --parallel
+      - name: Smoke launch
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem build -Recurse -Filter return_line_engine.exe | Select-Object -First 1
+          $env:SDL_VIDEODRIVER = 'dummy'
+          $env:SDL_RENDER_DRIVER = 'software'
+          & $exe.FullName --smoke-frame
+          if ($LASTEXITCODE -ne 0) { throw 'Windows smoke launch failed.' }
       - name: Package Windows runtime
         shell: pwsh
         run: |
@@ -32,7 +40,9 @@ jobs:
           $stage = 'package/ReturnLine-Windows-x64'
           New-Item -ItemType Directory -Force $stage | Out-Null
           Copy-Item $exe.FullName $stage
-          Copy-Item "$env:VCPKG_INSTALLATION_ROOT/installed/x64-windows/bin/SDL3.dll" $stage
+          $dll = Join-Path $exe.DirectoryName 'SDL3.dll'
+          if (-not (Test-Path $dll)) { throw "SDL3.dll was not beside the executable: $dll" }
+          Copy-Item $dll $stage
           Copy-Item engine/README.md $stage/README.txt
           Compress-Archive -Path "$stage/*" -DestinationPath package/ReturnLine-Windows-x64.zip -Force
       - uses: actions/upload-artifact@v4
