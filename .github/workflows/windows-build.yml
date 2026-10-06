@@ -44,10 +44,9 @@ jobs:
           if (-not (Test-Path $dll)) { throw "SDL3.dll was not beside the executable: $dll" }
           Copy-Item $dll $stage
           Copy-Item engine/README.md $stage/README.txt
-          Compress-Archive -Path "$stage/*" -DestinationPath package/ReturnLine-Windows-x64.zip -Force
       - uses: actions/upload-artifact@v4
         with:
           name: ReturnLine-Windows-x64
-          path: package/ReturnLine-Windows-x64.zip
+          path: package/ReturnLine-Windows-x64/*
           if-no-files-found: error
           retention-days: 30
